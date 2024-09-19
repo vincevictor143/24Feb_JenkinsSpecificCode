@@ -1,20 +1,23 @@
-pipeline
-{
-	stages
-	{
-		stage('Building jar')
-		{
-			bat "mvn clean package -DskipTests"
-		}
+pipeline {
+    agent any  // Define where to run the pipeline
 
-		stage('Building image')
-		{
-			bat "docker build -t attbatch1/buildimagethroughjenkins"
-		}
+    stages {
+        stage('Building jar') {
+            steps {
+                bat "mvn clean package -DskipTests"
+            }
+        }
 
-		stage('Push Image')
-		{
-			bat "docker push attbatch1/buildimagethroughjenkins"
-		}
-	}
+        stage('Building image') {
+            steps {
+                bat "docker build -t attbatch1/buildimagethroughjenkins ."
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                bat "docker push attbatch1/buildimagethroughjenkins"
+            }
+        }
+    }
 }
