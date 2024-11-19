@@ -10,7 +10,7 @@ pipeline {
 
         stage('Building image') {
             steps {
-                bat "docker build -t attbatch1/buildimagethroughjenkins ."
+                bat "docker build -t attbatch1/dockerfinalimage ."
             }
         }
 
