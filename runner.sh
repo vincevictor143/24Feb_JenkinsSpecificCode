@@ -1,25 +1,34 @@
-# Let's print what we have received 
+#!/bin/bash
+
+# Print HUB_HOST value
 echo "--------------------------------"
 echo "HUB_HOST      : $HUB_HOST"
 echo "--------------------------------"
 
-# Do not start the tests immediately. Hub has to be ready with browser nodes 
-echo "Checking if hub is ready..!"
+# Ensure HUB_HOST is set
+if [ -z "$HUB_HOST" ]; then
+  echo "HUB_HOST is not set. Exiting!"
+  exit 1
+fi
+
+# Wait for Selenium Grid Hub to be ready
+echo "Checking if hub is ready...!"
 count=0
-while [ "$( curl -s http://$HUB_HOST:4444/status | jq -r .value.ready )" != "true" ]
-do
-  count=$((count+1))
+while [ "$(curl -s http://$HUB_HOST:4444/status | jq -r .value.ready)" != "true" ]; do
+  count=$((count + 1))
   echo "Attempt: ${count}"
-  if [ "$count" -ge 60 ]
-  then
+  
+  # Timeout after 60 attempts
+  if [ "$count" -ge 60 ]; then
     echo "****** HUB IS NOT READY WITHIN 60 SECONDS ******"
     exit 1
   fi
+  
   sleep 1
 done
 
-# At this point, selenium grid should be up !
-echo "Selenium Grid is up and running. Running the test...."
+# Selenium Grid is ready
+echo "Selenium Grid is up and running. Running the tests..."
 
-# Start the java command 
-java  -DHUB_HOST=$HUB_HOST -cp "libs/*" org.testng.TestNG testng1.xml
+# Run the test using Java
+java -DHUB_HOST="$HUB_HOST" -cp "libs/*" org.testng.TestNG testng1.xml
